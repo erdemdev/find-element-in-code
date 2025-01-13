@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Find Element In Code",
+  "version": "1.0",
+  "description": "Extracts selected element's HTML code and sends it to code editor of your choice.",
+  "permissions": ["activeTab"],
+  "action": {
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}

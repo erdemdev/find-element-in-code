@@ -1,0 +1,12 @@
+{
+  "name": "find-element-in-code",
+  "version": "1.0.0",
+  "description": "Chrome extension to create an overlay for hovered elements",
+  "main": "index.js",
+  "scripts": {
+    "build": "pnpm run build"
+  },
+  "keywords": ["chrome-extension", "element-finder"],
+  "author": "",
+  "license": "MIT"
+}
