@@ -87,16 +87,37 @@ function createOverlays() {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.5);
         z-index: 20000;
-        cursor: wait;
+        display: flex;
+        justify-content: center;
+        align-items: center;
       `;
       processingOverlay.setAttribute("data-processing-overlay", "");
-      document.body.appendChild(processingOverlay);
 
-      // Set cursor to loading state
-      document.body.style.cursor = "wait";
-      overlay.style.cursor = "wait";
+      // Add loading spinner
+      const spinner = document.createElement("div");
+      spinner.style.cssText = `
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      `;
+      
+      // Add keyframe animation for spinner
+      const styleSheet = document.createElement("style");
+      styleSheet.textContent = `
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `;
+      document.head.appendChild(styleSheet);
+      
+      processingOverlay.appendChild(spinner);
+      document.body.appendChild(processingOverlay);
 
       try {
         const response = await new Promise((resolve, reject) => {
@@ -147,7 +168,6 @@ function createOverlays() {
         }
         
         // Reset cursor state and remove overlays
-        document.body.style.cursor = "";
         removeOverlays();
         
         // Toggle extension state back
