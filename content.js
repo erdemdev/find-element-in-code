@@ -17,6 +17,20 @@ function createOverlays() {
   // Remove existing overlays
   removeOverlays();
 
+  // Add escape key handler
+  const escapeHandler = (e) => {
+    if (e.key === "Escape") {
+      document.removeEventListener("keydown", escapeHandler);
+      removeOverlays();
+      isEnabled = false;
+      chrome.runtime.sendMessage({
+        action: "updateIcon",
+        enabled: false,
+      });
+    }
+  };
+  document.addEventListener("keydown", escapeHandler);
+
   // Create full-page overlay to prevent interaction with the page
   const pageOverlay = document.createElement("div");
   pageOverlay.style.cssText = `
@@ -33,7 +47,8 @@ function createOverlays() {
   document.body.appendChild(pageOverlay);
 
   // Prevent scrolling and add padding for scrollbar
-  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  const scrollbarWidth =
+    window.innerWidth - document.documentElement.clientWidth;
   document.body.style.paddingRight = scrollbarWidth + "px";
   document.body.style.overflow = "hidden";
 
@@ -105,7 +120,7 @@ function createOverlays() {
         border-radius: 50%;
         animation: spin 1s linear infinite;
       `;
-      
+
       // Add keyframe animation for spinner
       const styleSheet = document.createElement("style");
       styleSheet.textContent = `
@@ -115,7 +130,7 @@ function createOverlays() {
         }
       `;
       document.head.appendChild(styleSheet);
-      
+
       processingOverlay.appendChild(spinner);
       document.body.appendChild(processingOverlay);
 
@@ -160,19 +175,24 @@ function createOverlays() {
       } finally {
         // Reset processing state
         isProcessing = false;
-        
+
         // Remove processing overlay
-        const processingOverlay = document.querySelector("[data-processing-overlay]");
+        const processingOverlay = document.querySelector(
+          "[data-processing-overlay]",
+        );
         if (processingOverlay) {
           processingOverlay.remove();
         }
-        
+
         // Reset cursor state and remove overlays
         removeOverlays();
-        
+
         // Toggle extension state back
         isEnabled = false;
-        chrome.runtime.sendMessage({ action: "updateIcon", enabled: false });
+        chrome.runtime.sendMessage({
+          action: "updateIcon",
+          enabled: false,
+        });
       }
     };
 
@@ -204,7 +224,9 @@ function removeOverlays() {
   }
 
   // Remove any processing overlay if it exists
-  const processingOverlay = document.querySelector("[data-processing-overlay]");
+  const processingOverlay = document.querySelector(
+    "[data-processing-overlay]",
+  );
   if (processingOverlay) {
     processingOverlay.remove();
   }
@@ -226,6 +248,9 @@ chrome.runtime.onMessage.addListener((message) => {
       removeOverlays();
     }
     // Update icon state
-    chrome.runtime.sendMessage({ action: "updateIcon", enabled: isEnabled });
+    chrome.runtime.sendMessage({
+      action: "updateIcon",
+      enabled: isEnabled,
+    });
   }
 });
