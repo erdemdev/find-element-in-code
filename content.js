@@ -68,10 +68,14 @@ function createOverlays() {
             (response) => {
               if (chrome.runtime.lastError) {
                 reject(new Error(chrome.runtime.lastError.message));
-              } else if (!response.success) {
-                reject(new Error(response.error));
+              } else if (!response || !response.success) {
+                reject(
+                  new Error(
+                    response?.error || "Unknown error occurred",
+                  ),
+                );
               } else {
-                resolve(response.data);
+                resolve(response);
               }
             },
           );
@@ -79,9 +83,13 @@ function createOverlays() {
 
         console.log("response:", response);
 
-        if (response.path) {
+        if (response && response.path) {
           const deeplink = `windsurf://file${response.path}`;
           window.open(deeplink, "_blank");
+        } else if (response && response.notFound) {
+          alert("Element not found in the codebase.");
+        } else {
+          alert("Unexpected response from server.");
         }
       } catch (error) {
         console.error("Failed to connect to the code editor:", error);
