@@ -7,7 +7,7 @@ function hashStringToColor(str) {
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash);
   }
-  
+
   const h = Math.abs(hash) % 360;
   return `hsla(${h}, 70%, 60%, 0.3)`; // Using HSLA for direct opacity control
 }
@@ -37,12 +37,12 @@ function createOverlays() {
       pointer-events: auto;
     `;
 
-    overlay.addEventListener('mouseenter', () => {
+    overlay.addEventListener("mouseenter", () => {
       const baseHue = color.match(/hsla?\((\d+)/)[1];
       overlay.style.backgroundColor = `hsla(${baseHue}, 70%, 60%, 0.5), hsla(60, 70%, 60%, 0.3)`;
     });
 
-    overlay.addEventListener('mouseleave', () => {
+    overlay.addEventListener("mouseleave", () => {
       overlay.style.backgroundColor = color;
     });
 
@@ -56,17 +56,38 @@ function createOverlays() {
       e.preventDefault();
       e.stopPropagation();
 
+      console.log("Selected element ID:", element.id);
+
       try {
-        await fetch("http://localhost:12800", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id: element.id }),
+        const response = await new Promise((resolve, reject) => {
+          chrome.runtime.sendMessage(
+            {
+              action: "makeRequest",
+              data: `id=("|')${element.id}("|')`,
+            },
+            (response) => {
+              if (chrome.runtime.lastError) {
+                reject(new Error(chrome.runtime.lastError.message));
+              } else if (!response.success) {
+                reject(new Error(response.error));
+              } else {
+                resolve(response.data);
+              }
+            },
+          );
         });
+
+        console.log("response:", response);
+
+        if (response.path) {
+          const deeplink = `windsurf://file${response.path}`;
+          window.open(deeplink, "_blank");
+        }
       } catch (error) {
-        alert("Failed to connect code editor.");
-        console.error("Failed to send ID:", error);
+        console.error("Failed to connect to the code editor:", error);
+        alert(
+          `Failed to connect to the code editor: ${error.message}`,
+        );
       }
 
       removeOverlays();
