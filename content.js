@@ -32,7 +32,9 @@ function createOverlays() {
   pageOverlay.setAttribute("data-page-overlay", "");
   document.body.appendChild(pageOverlay);
 
-  // Prevent scrolling
+  // Prevent scrolling and add padding for scrollbar
+  const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+  document.body.style.paddingRight = scrollbarWidth + "px";
   document.body.style.overflow = "hidden";
 
   // Find all elements with ID attributes
@@ -187,9 +189,9 @@ function removeOverlays() {
     processingOverlay.remove();
   }
 
-  // Restore scrolling
+  // Restore scrolling and remove padding
   document.body.style.overflow = "";
-
+  document.body.style.paddingRight = "";
   overlays.clear();
   isProcessing = false; // Reset processing state when overlays are removed
 }
