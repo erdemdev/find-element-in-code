@@ -5,8 +5,10 @@
   "description": "Extracts selected element's HTML code and sends it to code editor of your choice.",
   "permissions": [
     "activeTab",
-    "webRequest"
+    "webRequest",
+    "storage"
   ],
+  "options_page": "options.html",
   "host_permissions": [
     "http://localhost:*/*",
     "http://127.0.0.1:*/*"

@@ -160,8 +160,17 @@ function createOverlays() {
         console.log("response:", response);
 
         if (response && response.path) {
-          const deeplink = `windsurf://file${response.path}`;
-          window.open(deeplink, "_blank");
+          // Get the preferred editor from storage
+          chrome.storage.sync.get(
+            {
+              preferredEditor: 'vscode' // default to vscode if not set
+            },
+            (items) => {
+              const editorScheme = items.preferredEditor === 'vscode' ? 'vscode' : 'windsurf';
+              const deeplink = `${editorScheme}://file${response.path}`;
+              window.open(deeplink, "_blank");
+            }
+          );
         } else if (response && response.notFound) {
           alert("Element not found in the codebase.");
         } else {
