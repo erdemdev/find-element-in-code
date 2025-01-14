@@ -1,6 +1,7 @@
 let overlays = new Map();
 let elementColors = new Map();
 let isEnabled = false;
+let isProcessing = false;
 
 function hashStringToColor(str) {
   let hash = 0;
@@ -57,25 +58,43 @@ function createOverlays() {
     overlay.setAttribute("data-highlight-overlay", "");
 
     overlay.addEventListener("mouseenter", () => {
+      if (isProcessing) return;
       const baseHue = color.match(/hsla?\((\d+)/)[1];
-      overlay.style.backgroundColor = `hsla(${baseHue}, 70%, 60%, 0.5), hsla(60, 70%, 60%, 0.3)`;
+      overlay.style.backgroundColor = `hsla(${baseHue}, 100%, 50%, 0.5)`;
     });
 
     overlay.addEventListener("mouseleave", () => {
+      if (isProcessing) return;
       overlay.style.backgroundColor = color;
     });
 
-    const rect = element.getBoundingClientRect();
-    overlay.style.left = window.scrollX + rect.left + "px";
-    overlay.style.top = window.scrollY + rect.top + "px";
-    overlay.style.width = rect.width + "px";
-    overlay.style.height = rect.height + "px";
-
     overlay.onclick = async (e) => {
+      if (isProcessing) return; // Prevent multiple clicks while processing
+      isProcessing = true;
+
       e.preventDefault();
       e.stopPropagation();
 
       console.log("Selected element ID:", element.id);
+
+      // Create processing overlay
+      const processingOverlay = document.createElement("div");
+      processingOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.1);
+        z-index: 20000;
+        cursor: wait;
+      `;
+      processingOverlay.setAttribute("data-processing-overlay", "");
+      document.body.appendChild(processingOverlay);
+
+      // Set cursor to loading state
+      document.body.style.cursor = "wait";
+      overlay.style.cursor = "wait";
 
       try {
         const response = await new Promise((resolve, reject) => {
@@ -115,13 +134,31 @@ function createOverlays() {
         alert(
           `Failed to connect to the code editor: ${error.message}`,
         );
+      } finally {
+        // Reset processing state
+        isProcessing = false;
+        
+        // Remove processing overlay
+        const processingOverlay = document.querySelector("[data-processing-overlay]");
+        if (processingOverlay) {
+          processingOverlay.remove();
+        }
+        
+        // Reset cursor state and remove overlays
+        document.body.style.cursor = "";
+        removeOverlays();
       }
-
-      removeOverlays();
-      isEnabled = false;
     };
 
     document.body.appendChild(overlay);
+
+    // Position the overlay
+    const rect = element.getBoundingClientRect();
+    overlay.style.top = `${rect.top + window.scrollY}px`;
+    overlay.style.left = `${rect.left + window.scrollX}px`;
+    overlay.style.width = `${rect.width}px`;
+    overlay.style.height = `${rect.height}px`;
+
     overlays.set(element, overlay);
   });
 }
@@ -140,10 +177,17 @@ function removeOverlays() {
     pageOverlay.remove();
   }
 
+  // Remove any processing overlay if it exists
+  const processingOverlay = document.querySelector("[data-processing-overlay]");
+  if (processingOverlay) {
+    processingOverlay.remove();
+  }
+
   // Restore scrolling
   document.body.style.overflow = "";
 
   overlays.clear();
+  isProcessing = false; // Reset processing state when overlays are removed
 }
 
 chrome.runtime.onMessage.addListener(
