@@ -13,19 +13,25 @@
       max-width: 500px;
       margin: 0 auto;
     }
+    h1 {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 2.25em;
+      opacity: 0.5;
+    }
     select {
       width: 100%;
-      padding: 8px;
-      margin-top: 8px;
+      padding: 16px;
+      margin-top: 16px;
       border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-      background-color: #ffffff;
-      color: #333;
+      border-radius: 8px;
+      font-size: 20px;
     }
     label {
       font-weight: 500;
       color: inherit;
+      font-size: 20px;
+      display: block;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -46,7 +52,8 @@
 </head>
 <body>
   <div class="option-container">
-    <label for="editor">Preferred Code Editor:</label>
+    <h1>Find Element In Code | Options</h1>
+    <label for="editor">Preferred Code Editor</label>
     <select id="editor">
       <option value="vscode">Visual Studio Code (vscode://)</option>
       <option value="windsurf">Windsurf (windsurf://)</option>
