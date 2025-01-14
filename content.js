@@ -69,20 +69,41 @@ function createOverlays() {
       z-index: 10000;
       background-color: ${color};
       cursor: pointer;
-      transition: background-color 0.2s ease;
       pointer-events: auto;
     `;
     overlay.setAttribute("data-highlight-overlay", "");
 
+    // Create ID label element
+    const idLabel = document.createElement("div");
+    idLabel.style.cssText = `
+      display: none;
+      position: absolute;
+      top: -25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #333;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+      white-space: nowrap;
+      z-index: 10001;
+    `;
+    idLabel.textContent = element.id;
+    overlay.appendChild(idLabel);
+
     overlay.addEventListener("mouseenter", () => {
       if (isProcessing) return;
       const baseHue = color.match(/hsla?\((\d+)/)[1];
-      overlay.style.backgroundColor = `hsla(${baseHue}, 100%, 50%, 0.5)`;
+      overlay.style.border = `2px dashed hsla(${baseHue}, 70%, 60%, 1)`;
+      idLabel.style.display = "block";
     });
 
     overlay.addEventListener("mouseleave", () => {
       if (isProcessing) return;
-      overlay.style.backgroundColor = color;
+      overlay.style.border = "none";
+      idLabel.style.display = "none";
     });
 
     overlay.onclick = async (e) => {
@@ -163,13 +184,16 @@ function createOverlays() {
           // Get the preferred editor from storage
           chrome.storage.sync.get(
             {
-              preferredEditor: 'vscode' // default to vscode if not set
+              preferredEditor: "vscode", // default to vscode if not set
             },
             (items) => {
-              const editorScheme = items.preferredEditor === 'vscode' ? 'vscode' : 'windsurf';
+              const editorScheme =
+                items.preferredEditor === "vscode"
+                  ? "vscode"
+                  : "windsurf";
               const deeplink = `${editorScheme}://file${response.path}`;
               window.open(deeplink, "_blank");
-            }
+            },
           );
         } else if (response && response.notFound) {
           alert("Element not found in the codebase.");
