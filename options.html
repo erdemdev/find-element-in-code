@@ -6,6 +6,8 @@
     body {
       padding: 20px;
       font-family: system-ui, -apple-system, sans-serif;
+      background-color: #ffffff;
+      color: #333;
     }
     .option-container {
       max-width: 500px;
@@ -18,10 +20,27 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       font-size: 14px;
+      background-color: #ffffff;
+      color: #333;
     }
     label {
       font-weight: 500;
-      color: #333;
+      color: inherit;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: #1e1e1e;
+        color: #ffffff;
+      }
+      select {
+        background-color: #2d2d2d;
+        color: #ffffff;
+        border-color: #404040;
+      }
+      select:focus {
+        outline-color: #0078d4;
+      }
     }
   </style>
 </head>
