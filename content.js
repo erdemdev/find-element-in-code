@@ -16,6 +16,24 @@ function createOverlays() {
   // Remove existing overlays
   removeOverlays();
 
+  // Create full-page overlay to prevent interaction with the page
+  const pageOverlay = document.createElement("div");
+  pageOverlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 9999;
+    cursor: crosshair;
+  `;
+  pageOverlay.setAttribute("data-page-overlay", "");
+  document.body.appendChild(pageOverlay);
+
+  // Prevent scrolling
+  document.body.style.overflow = "hidden";
+
   // Find all elements with ID attributes
   const elementsWithId = document.querySelectorAll("[id]");
 
@@ -36,6 +54,7 @@ function createOverlays() {
       transition: background-color 0.2s ease;
       pointer-events: auto;
     `;
+    overlay.setAttribute("data-highlight-overlay", "");
 
     overlay.addEventListener("mouseenter", () => {
       const baseHue = color.match(/hsla?\((\d+)/)[1];
@@ -108,7 +127,22 @@ function createOverlays() {
 }
 
 function removeOverlays() {
-  overlays.forEach((overlay) => overlay.remove());
+  // Remove all existing overlays
+  document
+    .querySelectorAll("[data-highlight-overlay]")
+    .forEach((overlay) => {
+      overlay.remove();
+    });
+
+  // Remove the full-page overlay if it exists
+  const pageOverlay = document.querySelector("[data-page-overlay]");
+  if (pageOverlay) {
+    pageOverlay.remove();
+  }
+
+  // Restore scrolling
+  document.body.style.overflow = "";
+
   overlays.clear();
 }
 
