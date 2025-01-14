@@ -147,6 +147,10 @@ function createOverlays() {
         // Reset cursor state and remove overlays
         document.body.style.cursor = "";
         removeOverlays();
+        
+        // Toggle extension state back
+        isEnabled = false;
+        chrome.runtime.sendMessage({ action: "updateIcon", enabled: false });
       }
     };
 
@@ -190,16 +194,16 @@ function removeOverlays() {
   isProcessing = false; // Reset processing state when overlays are removed
 }
 
-chrome.runtime.onMessage.addListener(
-  (request, sender, sendResponse) => {
-    if (request.action === "toggle") {
-      isEnabled = !isEnabled;
-      if (isEnabled) {
-        createOverlays();
-      } else {
-        removeOverlays();
-      }
-      sendResponse({ success: true });
+// Listen for messages from the background script
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.action === "toggle") {
+    isEnabled = !isEnabled;
+    if (isEnabled) {
+      createOverlays();
+    } else {
+      removeOverlays();
     }
-  },
-);
+    // Update icon state
+    chrome.runtime.sendMessage({ action: "updateIcon", enabled: isEnabled });
+  }
+});
