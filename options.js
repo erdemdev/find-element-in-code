@@ -52,8 +52,8 @@ const resetExtensionsButton = document.getElementById('reset-extensions');
 const extensionsContainer = document.getElementById('extensions-container');
 
 // Default values
-const DEFAULT_PATTERNS = ['^radix-'];
-const DEFAULT_EXTENSIONS = ['html', 'jsx', 'tsx', 'astro', 'php'];
+const DEFAULT_PATTERNS = ['^.{1,2}$', '^radix-', '^path'];
+const DEFAULT_EXTENSIONS = ['html', 'jsx', 'tsx', 'astro', 'php', 'svg'];
 
 let patterns = new Set();
 let extensions = new Set();
