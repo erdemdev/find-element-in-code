@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Find Element In Code - Options</title>
+  <title>Options | Find Element In Code</title>
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
@@ -12,6 +12,17 @@
       <option value="vscode">Visual Studio Code (vscode://)</option>
       <option value="windsurf">Windsurf (windsurf://)</option>
     </select>
+
+    <div class="tag-section">
+      <label for="tag-input">Exclusion Filters</label>
+      <div class="tag-input-container">
+        <input type="text" id="tag-input" placeholder="Enter a new regex pattern">
+        <button id="add-tag">Add Filter</button>
+        <button id="reset-filters" class="reset-button">Reset</button>
+      </div>
+      <div id="tags-container">
+      </div>
+    </div>
   </div>
   <script src="options.js"></script>
 </body>
