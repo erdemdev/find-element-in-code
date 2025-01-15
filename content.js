@@ -203,7 +203,7 @@ function createOverlays() {
       } catch (error) {
         console.error("Failed to connect to the code editor:", error);
         alert(
-          `Failed to connect to the code editor: ${error.message}`,
+          "Please make sure the code editor bridge is connected.",
         );
       } finally {
         // Reset processing state
