@@ -6,17 +6,22 @@ function saveOptions() {
       preferredEditor: editor
     },
     () => {
-      // Update status to let user know options were saved.
-      const status = document.createElement('div');
-      status.textContent = 'Options saved.';
-      status.style.color = '#4CAF50';
-      status.style.marginTop = '10px';
-      document.querySelector('.option-container').appendChild(status);
-      setTimeout(() => {
-        status.remove();
-      }, 2000);
+      showToast('Options saved');
     }
   );
+}
+
+// Toast notification
+let toastTimeout;
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2000);
 }
 
 // Restores select box state using the preferences stored in chrome.storage
@@ -55,29 +60,13 @@ let extensions = new Set();
 
 function savePatterns() {
   chrome.storage.sync.set({ regexPatterns: Array.from(patterns) }, () => {
-    // Show save confirmation
-    const status = document.createElement('div');
-    status.textContent = 'Filters saved.';
-    status.style.color = '#4CAF50';
-    status.style.marginTop = '10px';
-    document.querySelector('.tag-section').appendChild(status);
-    setTimeout(() => {
-      status.remove();
-    }, 2000);
+    showToast('Options saved');
   });
 }
 
 function saveExtensions() {
   chrome.storage.sync.set({ fileExtensions: Array.from(extensions) }, () => {
-    // Show save confirmation
-    const status = document.createElement('div');
-    status.textContent = 'Extensions saved.';
-    status.style.color = '#4CAF50';
-    status.style.marginTop = '10px';
-    document.querySelectorAll('.tag-section')[1].appendChild(status);
-    setTimeout(() => {
-      status.remove();
-    }, 2000);
+    showToast('Options saved');
   });
 }
 

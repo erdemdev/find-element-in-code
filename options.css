@@ -137,6 +137,25 @@ label {
   border-color: #ff4444 !important;
 }
 
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #1e1e1e;
