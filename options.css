@@ -20,9 +20,15 @@ select {
   width: 100%;
   padding: 16px;
   margin-top: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #404040;
   border-radius: 8px;
   font-size: 20px;
+  background-color: #2d2d2d;
+  color: #ffffff;
+}
+
+select:focus {
+  outline-color: #0078d4;
 }
 
 label {
@@ -42,16 +48,25 @@ label {
   margin-top: 16px;
 }
 
-#tag-input {
+#tag-input,
+#extension-input {
   flex: 1;
   padding: 16px;
-  border: 1px solid #ccc;
+  border: 1px solid #404040;
   border-radius: 8px;
   font-size: 16px;
   font-family: 'Consolas', monospace;
+  background-color: #2d2d2d;
+  color: #ffffff;
 }
 
-#add-tag {
+#tag-input:focus,
+#extension-input:focus {
+  outline-color: #0078d4;
+}
+
+#add-tag,
+#add-extension {
   padding: 0 24px;
   border: none;
   border-radius: 8px;
@@ -61,11 +76,13 @@ label {
   cursor: pointer;
 }
 
-#add-tag:hover {
+#add-tag:hover,
+#add-extension:hover {
   background-color: #006cbd;
 }
 
-#tags-container {
+#tags-container,
+#extensions-container {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -77,10 +94,11 @@ label {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: #f0f0f0;
+  background-color: #2d2d2d;
   border-radius: 16px;
   font-size: 14px;
   font-family: 'Consolas', monospace;
+  color: #ffffff;
 }
 
 .remove-tag {
@@ -89,68 +107,40 @@ label {
   padding: 0;
   font-size: 18px;
   cursor: pointer;
-  color: #666;
+  color: #999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .remove-tag:hover {
-  color: #ff4444;
-}
-
-.invalid-regex {
-  border-color: #ff4444 !important;
+  color: #ff6666;
 }
 
 .reset-button {
   padding: 0 24px;
-  border: 1px solid #ccc;
+  border: 1px solid #404040;
   border-radius: 8px;
   background-color: transparent;
-  color: #666;
+  color: #999;
   font-size: 16px;
   cursor: pointer;
 }
 
 .reset-button:hover {
-  background-color: #f0f0f0;
-  border-color: #999;
+  background-color: #2d2d2d;
+  border-color: #666;
+}
+
+.invalid-regex,
+.invalid-input {
+  border-color: #ff4444 !important;
 }
 
 @media (prefers-color-scheme: dark) {
   body {
     background-color: #1e1e1e;
     color: #ffffff;
-  }
-  select {
-    background-color: #2d2d2d;
-    color: #ffffff;
-    border-color: #404040;
-  }
-  select:focus {
-    outline-color: #0078d4;
-  }
-  #tag-input {
-    background-color: #2d2d2d;
-    color: #ffffff;
-    border-color: #404040;
-  }
-
-  #tag-input:focus {
-    outline-color: #0078d4;
-  }
-
-  .tag {
-    background-color: #2d2d2d;
-  }
-
-  .remove-tag {
-    color: #999;
-  }
-
-  .remove-tag:hover {
-    color: #ff6666;
   }
   .reset-button {
     border-color: #404040;
