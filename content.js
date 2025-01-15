@@ -23,20 +23,20 @@ function createOverlays() {
 
     // Add escape key handler
     const escapeHandler = (e) => {
-      if (e.key === "Escape") {
-        document.removeEventListener("keydown", escapeHandler);
+      if (e.key === 'Escape') {
+        document.removeEventListener('keydown', escapeHandler);
         removeOverlays();
         isEnabled = false;
         chrome.runtime.sendMessage({
-          action: "updateIcon",
+          action: 'updateIcon',
           enabled: false,
         });
       }
     };
-    document.addEventListener("keydown", escapeHandler);
+    document.addEventListener('keydown', escapeHandler);
 
     // Create full-page overlay to prevent interaction with the page
-    const pageOverlay = document.createElement("div");
+    const pageOverlay = document.createElement('div');
     pageOverlay.style.cssText = `
       position: fixed;
       top: 0;
@@ -47,17 +47,17 @@ function createOverlays() {
       z-index: 9999;
       cursor: crosshair;
     `;
-    pageOverlay.setAttribute("data-page-overlay", "");
+    pageOverlay.setAttribute('data-page-overlay', '');
     document.body.appendChild(pageOverlay);
 
     // Prevent scrolling and add padding for scrollbar
     const scrollbarWidth =
       window.innerWidth - document.documentElement.clientWidth;
-    document.body.style.paddingRight = scrollbarWidth + "px";
-    document.body.style.overflow = "hidden";
+    document.body.style.paddingRight = scrollbarWidth + 'px';
+    document.body.style.overflow = 'hidden';
 
     // Find all elements with ID attributes
-    const elementsWithId = document.querySelectorAll("[id]");
+    const elementsWithId = document.querySelectorAll('[id]');
 
     elementsWithId.forEach((element) => {
       // Skip elements that match any exclusion pattern
@@ -75,7 +75,7 @@ function createOverlays() {
         return;
       }
 
-      const overlay = document.createElement("div");
+      const overlay = document.createElement('div');
 
       // Use existing color or generate new one
       if (!elementColors.has(element.id)) {
@@ -90,10 +90,10 @@ function createOverlays() {
         cursor: pointer;
         pointer-events: auto;
       `;
-      overlay.setAttribute("data-highlight-overlay", "");
+      overlay.setAttribute('data-highlight-overlay', '');
 
       // Create ID label element
-      const idLabel = document.createElement("div");
+      const idLabel = document.createElement('div');
       idLabel.style.cssText = `
         display: none;
         position: absolute;
@@ -112,17 +112,17 @@ function createOverlays() {
       idLabel.textContent = element.id;
       overlay.appendChild(idLabel);
 
-      overlay.addEventListener("mouseenter", () => {
+      overlay.addEventListener('mouseenter', () => {
         if (isProcessing) return;
         const baseHue = color.match(/hsla?\((\d+)/)[1];
         overlay.style.border = `2px dashed hsla(${baseHue}, 70%, 60%, 1)`;
-        idLabel.style.display = "block";
+        idLabel.style.display = 'block';
       });
 
-      overlay.addEventListener("mouseleave", () => {
+      overlay.addEventListener('mouseleave', () => {
         if (isProcessing) return;
-        overlay.style.border = "none";
-        idLabel.style.display = "none";
+        overlay.style.border = 'none';
+        idLabel.style.display = 'none';
       });
 
       overlay.onclick = async (e) => {
@@ -132,10 +132,10 @@ function createOverlays() {
         e.preventDefault();
         e.stopPropagation();
 
-        console.log("Selected element ID:", element.id);
+        console.log('Selected element ID:', element.id);
 
         // Create processing overlay
-        const processingOverlay = document.createElement("div");
+        const processingOverlay = document.createElement('div');
         processingOverlay.style.cssText = `
           position: fixed;
           top: 0;
@@ -148,10 +148,10 @@ function createOverlays() {
           justify-content: center;
           align-items: center;
         `;
-        processingOverlay.setAttribute("data-processing-overlay", "");
+        processingOverlay.setAttribute('data-processing-overlay', '');
 
         // Add loading spinner
-        const spinner = document.createElement("div");
+        const spinner = document.createElement('div');
         spinner.style.cssText = `
           width: 50px;
           height: 50px;
@@ -162,7 +162,7 @@ function createOverlays() {
         `;
 
         // Add keyframe animation for spinner
-        const styleSheet = document.createElement("style");
+        const styleSheet = document.createElement('style');
         styleSheet.textContent = `
           @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -178,7 +178,7 @@ function createOverlays() {
           const response = await new Promise((resolve, reject) => {
             chrome.runtime.sendMessage(
               {
-                action: "makeRequest",
+                action: 'makeRequest',
                 data: `id=("|')${element.id}("|')`,
               },
               (response) => {
@@ -186,51 +186,45 @@ function createOverlays() {
                   reject(new Error(chrome.runtime.lastError.message));
                 } else if (!response || !response.success) {
                   reject(
-                    new Error(
-                      response?.error || "Unknown error occurred",
-                    ),
+                    new Error(response?.error || 'Unknown error occurred')
                   );
                 } else {
                   resolve(response);
                 }
-              },
+              }
             );
           });
 
-          console.log("response:", response);
+          console.log('response:', response);
 
           if (response && response.path) {
             // Get the preferred editor from storage
             chrome.storage.sync.get(
               {
-                preferredEditor: "vscode", // default to vscode if not set
+                preferredEditor: 'vscode', // default to vscode if not set
               },
               (items) => {
                 const editorScheme =
-                  items.preferredEditor === "vscode"
-                    ? "vscode"
-                    : "windsurf";
+                  items.preferredEditor === 'vscode' ? 'vscode' : 'windsurf';
                 const deeplink = `${editorScheme}://file${response.path}`;
-                window.open(deeplink, "_blank");
-              },
+                window.open(deeplink, '_blank');
+              }
             );
           } else if (response && response.notFound) {
-            alert("Element not found in the codebase.");
+            alert('Element not found in the codebase.');
           } else {
-            alert("Unexpected response from server.");
+            alert('Unexpected response from server.');
           }
         } catch (error) {
-          console.error("Failed to connect to the code editor:", error);
-          alert(
-            "Please make sure the code editor bridge is connected.",
-          );
+          console.error('Failed to connect to the code editor:', error);
+          alert('Please make sure the code editor bridge is connected.');
         } finally {
           // Reset processing state
           isProcessing = false;
 
           // Remove processing overlay
           const processingOverlay = document.querySelector(
-            "[data-processing-overlay]",
+            '[data-processing-overlay]'
           );
           if (processingOverlay) {
             processingOverlay.remove();
@@ -242,7 +236,7 @@ function createOverlays() {
           // Toggle extension state back
           isEnabled = false;
           chrome.runtime.sendMessage({
-            action: "updateIcon",
+            action: 'updateIcon',
             enabled: false,
           });
         }
@@ -264,36 +258,32 @@ function createOverlays() {
 
 function removeOverlays() {
   // Remove all existing overlays
-  document
-    .querySelectorAll("[data-highlight-overlay]")
-    .forEach((overlay) => {
-      overlay.remove();
-    });
+  document.querySelectorAll('[data-highlight-overlay]').forEach((overlay) => {
+    overlay.remove();
+  });
 
   // Remove the full-page overlay if it exists
-  const pageOverlay = document.querySelector("[data-page-overlay]");
+  const pageOverlay = document.querySelector('[data-page-overlay]');
   if (pageOverlay) {
     pageOverlay.remove();
   }
 
   // Remove any processing overlay if it exists
-  const processingOverlay = document.querySelector(
-    "[data-processing-overlay]",
-  );
+  const processingOverlay = document.querySelector('[data-processing-overlay]');
   if (processingOverlay) {
     processingOverlay.remove();
   }
 
   // Restore scrolling and remove padding
-  document.body.style.overflow = "";
-  document.body.style.paddingRight = "";
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
   overlays.clear();
   isProcessing = false; // Reset processing state when overlays are removed
 }
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.action === "toggle") {
+  if (message.action === 'toggle') {
     isEnabled = !isEnabled;
     if (isEnabled) {
       createOverlays();
@@ -302,7 +292,7 @@ chrome.runtime.onMessage.addListener((message) => {
     }
     // Update icon state
     chrome.runtime.sendMessage({
-      action: "updateIcon",
+      action: 'updateIcon',
       enabled: isEnabled,
     });
   }

@@ -3,7 +3,7 @@ function saveOptions() {
   const editor = document.getElementById('editor').value;
   chrome.storage.sync.set(
     {
-      preferredEditor: editor
+      preferredEditor: editor,
     },
     () => {
       showToast('Options saved');
@@ -17,7 +17,7 @@ function showToast(message) {
   const toast = document.getElementById('toast');
   toast.textContent = message;
   toast.classList.add('show');
-  
+
   clearTimeout(toastTimeout);
   toastTimeout = setTimeout(() => {
     toast.classList.remove('show');
@@ -28,7 +28,7 @@ function showToast(message) {
 function restoreOptions() {
   chrome.storage.sync.get(
     {
-      preferredEditor: 'vscode' // default value
+      preferredEditor: 'vscode', // default value
     },
     (items) => {
       document.getElementById('editor').value = items.preferredEditor;
@@ -87,7 +87,7 @@ function createPillElement(text, onRemove) {
   const pill = document.createElement('span');
   pill.className = 'tag';
   pill.textContent = text;
-  
+
   const removeButton = document.createElement('button');
   removeButton.className = 'remove-tag';
   removeButton.innerHTML = '&times;';
@@ -95,7 +95,7 @@ function createPillElement(text, onRemove) {
     pill.remove();
     onRemove(text);
   };
-  
+
   pill.appendChild(removeButton);
   return pill;
 }
@@ -116,16 +116,16 @@ function createExtensionElement(extension) {
 
 function addRegexPattern() {
   const pattern = regexInput.value.trim();
-  
+
   if (!pattern) return;
-  
+
   if (!isValidRegex(pattern)) {
     regexInput.classList.add('invalid-regex');
     return;
   }
-  
+
   regexInput.classList.remove('invalid-regex');
-  
+
   if (!patterns.has(pattern)) {
     patterns.add(pattern);
     regexContainer.appendChild(createRegexElement(pattern));
@@ -136,17 +136,20 @@ function addRegexPattern() {
 
 function addExtension() {
   // Remove leading dot and convert to lowercase
-  const extension = extensionInput.value.trim().toLowerCase().replace(/^\./, '');
-  
+  const extension = extensionInput.value
+    .trim()
+    .toLowerCase()
+    .replace(/^\./, '');
+
   if (!extension) return;
-  
+
   if (!isValidExtension(extension)) {
     extensionInput.classList.add('invalid-input');
     return;
   }
-  
+
   extensionInput.classList.remove('invalid-input');
-  
+
   if (!extensions.has(extension)) {
     extensions.add(extension);
     extensionsContainer.appendChild(createExtensionElement(extension));
@@ -158,7 +161,7 @@ function addExtension() {
 function resetPatterns() {
   patterns = new Set(DEFAULT_PATTERNS);
   regexContainer.innerHTML = '';
-  DEFAULT_PATTERNS.forEach(pattern => {
+  DEFAULT_PATTERNS.forEach((pattern) => {
     regexContainer.appendChild(createRegexElement(pattern));
   });
   savePatterns();
@@ -167,7 +170,7 @@ function resetPatterns() {
 function resetExtensions() {
   extensions = new Set(DEFAULT_EXTENSIONS);
   extensionsContainer.innerHTML = '';
-  DEFAULT_EXTENSIONS.forEach(extension => {
+  DEFAULT_EXTENSIONS.forEach((extension) => {
     extensionsContainer.appendChild(createExtensionElement(extension));
   });
   saveExtensions();
@@ -217,9 +220,9 @@ function initializePatterns() {
     } else {
       patterns = new Set(result.regexPatterns);
     }
-    
+
     regexContainer.innerHTML = '';
-    patterns.forEach(pattern => {
+    patterns.forEach((pattern) => {
       regexContainer.appendChild(createRegexElement(pattern));
     });
   });
@@ -233,9 +236,9 @@ function initializeExtensions() {
     } else {
       extensions = new Set(result.fileExtensions);
     }
-    
+
     extensionsContainer.innerHTML = '';
-    extensions.forEach(extension => {
+    extensions.forEach((extension) => {
       extensionsContainer.appendChild(createExtensionElement(extension));
     });
   });

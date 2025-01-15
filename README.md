@@ -24,3 +24,4 @@ This project uses pnpm for package management. To get started:
 
 ```bash
 pnpm install
+```

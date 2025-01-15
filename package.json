@@ -6,7 +6,10 @@
   "scripts": {
     "build": "pnpm run build"
   },
-  "keywords": ["chrome-extension", "element-finder"],
+  "keywords": [
+    "chrome-extension",
+    "element-finder"
+  ],
   "author": "",
   "license": "MIT"
 }
