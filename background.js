@@ -1,3 +1,38 @@
+// Track active tabs
+const activeTabStates = new Map();
+
+// Listen for tab updates
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'complete') {
+    // Reset state for newly loaded tabs
+    activeTabStates.delete(tabId);
+    updateIconForTab(tabId, false);
+  }
+});
+
+// Listen for tab activation
+chrome.tabs.onActivated.addListener((activeInfo) => {
+  const isEnabled = activeTabStates.get(activeInfo.tabId) || false;
+  updateIconForTab(activeInfo.tabId, isEnabled);
+});
+
+function updateIconForTab(tabId, enabled) {
+  const iconPath = enabled
+    ? {
+        16: "icons/icon16.png",
+        48: "icons/icon48.png",
+        128: "icons/icon128.png",
+      }
+    : {
+        16: "icons/icon16-disabled.png",
+        48: "icons/icon48-disabled.png",
+        128: "icons/icon128-disabled.png",
+      };
+
+  chrome.action.setIcon({ path: iconPath });
+  activeTabStates.set(tabId, enabled);
+}
+
 chrome.action.onClicked.addListener((tab) => {
   chrome.tabs.sendMessage(tab.id, { action: "toggle" });
 });
@@ -34,20 +69,9 @@ chrome.runtime.onMessage.addListener(
 
       return true; // Will respond asynchronously
     } else if (request.action === "updateIcon") {
-      // Update the extension icon based on state
-      const iconPath = request.enabled
-        ? {
-            16: "icons/icon16.png",
-            48: "icons/icon48.png",
-            128: "icons/icon128.png",
-          }
-        : {
-            16: "icons/icon16-disabled.png",
-            48: "icons/icon48-disabled.png",
-            128: "icons/icon128-disabled.png",
-          };
-
-      chrome.action.setIcon({ path: iconPath });
+      if (sender.tab) {
+        updateIconForTab(sender.tab.id, request.enabled);
+      }
     }
-  },
+  }
 );
