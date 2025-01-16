@@ -1,11 +1,13 @@
 // Track active tabs
 const activeTabStates = new Map();
+const loadingStates = new Map();
 
 // Listen for tab updates
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === 'complete') {
     // Reset state for newly loaded tabs
     activeTabStates.delete(tabId);
+    loadingStates.delete(tabId);
     updateIconForTab(tabId, false);
   }
 });
@@ -13,32 +15,51 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 // Listen for tab activation
 chrome.tabs.onActivated.addListener((activeInfo) => {
   const isEnabled = activeTabStates.get(activeInfo.tabId) || false;
-  updateIconForTab(activeInfo.tabId, isEnabled);
+  const isLoading = loadingStates.get(activeInfo.tabId) || false;
+  updateIconForTab(activeInfo.tabId, isEnabled, isLoading);
 });
 
-function updateIconForTab(tabId, enabled) {
-  const iconPath = enabled
-    ? {
-        16: 'icons/icon16.png',
-        48: 'icons/icon48.png',
-        128: 'icons/icon128.png',
-      }
-    : {
-        16: 'icons/icon16-disabled.png',
-        48: 'icons/icon48-disabled.png',
-        128: 'icons/icon128-disabled.png',
-      };
+function updateIconForTab(tabId, enabled, isLoading = false) {
+  let iconPath;
+  if (isLoading) {
+    iconPath = {
+      16: 'icons/icon16-processing.png',
+      48: 'icons/icon48-processing.png',
+      128: 'icons/icon128-processing.png',
+    };
+  } else {
+    iconPath = enabled
+      ? {
+          16: 'icons/icon16.png',
+          48: 'icons/icon48.png',
+          128: 'icons/icon128.png',
+        }
+      : {
+          16: 'icons/icon16-disabled.png',
+          48: 'icons/icon48-disabled.png',
+          128: 'icons/icon128-disabled.png',
+        };
+  }
 
   chrome.action.setIcon({ path: iconPath });
   activeTabStates.set(tabId, enabled);
+
+  // Disable the button while loading
+  chrome.action.setEnabled({ tabId: tabId, enabled: !isLoading });
 }
 
 chrome.action.onClicked.addListener((tab) => {
-  chrome.tabs.sendMessage(tab.id, { action: 'toggle' });
+  if (!loadingStates.get(tab.id)) {
+    chrome.tabs.sendMessage(tab.id, { action: 'toggle' });
+  }
 });
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'makeRequest') {
+  if (request.action === 'updateLoadingState' && sender.tab) {
+    const tabId = sender.tab.id;
+    loadingStates.set(tabId, request.isLoading);
+    updateIconForTab(tabId, request.isEnabled, request.isLoading);
+  } else if (request.action === 'makeRequest') {
     chrome.storage.sync.get(
       {
         fileTypes: ['js', 'jsx', 'ts', 'tsx'],

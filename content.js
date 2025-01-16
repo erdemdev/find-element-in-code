@@ -2,6 +2,7 @@ let overlays = new Map();
 let elementColors = new Map();
 let isEnabled = false;
 let isProcessing = false;
+let isOverlayLoaded = false;
 
 function hashStringToColor(str) {
   let hash = 0;
@@ -48,6 +49,9 @@ function getStandardizedId(originalId, combinePatterns) {
 }
 
 function createOverlays() {
+  isProcessing = true;
+  chrome.runtime.sendMessage({ action: 'updateLoadingState', isLoading: true });
+
   // Get both exclusion and combining patterns
   chrome.storage.sync.get(
     {
@@ -380,6 +384,14 @@ function createOverlays() {
           overlays.set(element, overlay);
         });
       });
+
+      isProcessing = false;
+      isOverlayLoaded = true;
+      chrome.runtime.sendMessage({ 
+        action: 'updateLoadingState', 
+        isLoading: false,
+        isEnabled: true 
+      });
     }
   );
 }
@@ -411,17 +423,18 @@ function removeOverlays() {
 
 // Listen for messages from the background script
 chrome.runtime.onMessage.addListener((message) => {
-  if (message.action === 'toggle') {
-    isEnabled = !isEnabled;
-    if (isEnabled) {
+  if (message.action === 'toggle' && !isProcessing) {
+    if (!isEnabled) {
       createOverlays();
     } else {
       removeOverlays();
+      isOverlayLoaded = false;
+      chrome.runtime.sendMessage({ 
+        action: 'updateLoadingState', 
+        isLoading: false,
+        isEnabled: false 
+      });
     }
-    // Update icon state
-    chrome.runtime.sendMessage({
-      action: 'updateIcon',
-      enabled: isEnabled,
-    });
+    isEnabled = !isEnabled;
   }
 });
