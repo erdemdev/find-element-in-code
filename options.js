@@ -68,7 +68,10 @@ const extensionContainer = document.querySelector(
 // Default values
 const DEFAULT_PATTERNS = ['^.{1,2}$', '^radix-', '^path'];
 const DEFAULT_EXTENSIONS = ['html', 'jsx', 'tsx', 'astro', 'php', 'svg'];
-const DEFAULT_COMBINE_REGEX = ['\\d+'];
+const DEFAULT_COMBINE_REGEX = [
+  '\\d+$',
+  '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+];
 
 let patterns = new Set();
 let fileTypes = new Set();
