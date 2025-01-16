@@ -275,8 +275,9 @@ function createOverlays() {
               },
               (items) => {
                 const isWindsurf = items.preferredEditor === 'windsurf';
-                const spinnerBg = isWindsurf ? '#2E7D32' : '#005999'; // Darker colors
-                const spinnerIndicator = isWindsurf ? '#69F0AE' : '#61DAFB'; // Lighter colors
+                // Use the same colors as defined in options.js
+                const ideColor = isWindsurf ? '#4CAF50' : '#007ACC';
+                
                 spinner.style.cssText = `
                   position: absolute;
                   top: 50%;
@@ -284,8 +285,8 @@ function createOverlays() {
                   transform: translate(-50%, -50%);
                   width: 50px;
                   height: 50px;
-                  border: 5px solid ${spinnerBg};
-                  border-top: 5px solid ${spinnerIndicator};
+                  border: 5px solid #444444;
+                  border-top: 5px solid ${ideColor};
                   border-radius: 50%;
                   animation: spin 1s linear infinite;
                 `;
