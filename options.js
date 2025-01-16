@@ -118,8 +118,12 @@ function isValidExtension(extension) {
 function createPillElement(pattern, onRemove) {
   const pill = document.createElement('span');
   pill.className = 'tag';
-  pill.textContent = pattern;
   pill.dataset.pattern = pattern;
+  pill.title = pattern; // Add title for tooltip
+
+  const textSpan = document.createElement('span');
+  textSpan.textContent = pattern;
+  pill.appendChild(textSpan);
 
   const removeButton = document.createElement('button');
   removeButton.className = 'remove-tag';
@@ -143,8 +147,12 @@ function createExclusionElement(pattern) {
 function createCombiningElement(pattern) {
   const pill = document.createElement('span');
   pill.className = 'combine-regex-pill';
-  pill.textContent = pattern;
   pill.dataset.pattern = pattern;
+  pill.title = pattern; // Add title for tooltip
+
+  const textSpan = document.createElement('span');
+  textSpan.textContent = pattern;
+  pill.appendChild(textSpan);
 
   const removeButton = document.createElement('button');
   removeButton.className = 'remove-tag';

@@ -1,49 +1,53 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Options | Find Element In Code</title>
-  <link rel="stylesheet" href="options.css">
-</head>
-<body>
-  <div class="option-container">
-    <h1>Find Element In Code | Options</h1>
-    <label for="editor-select">Preferred Code Editor</label>
-    <select id="editor-select">
-      <option value="vscode">Visual Studio Code (vscode://)</option>
-      <option value="windsurf">Windsurf (windsurf://)</option>
-    </select>
+  <head>
+    <title>Options | Find Element In Code</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <div class="option-container">
+      <h1>Find Element In Code | Options</h1>
+      <label for="editor-select">Preferred Code Editor</label>
+      <select id="editor-select">
+        <option value="vscode">Visual Studio Code (vscode://)</option>
+        <option value="windsurf">Windsurf (windsurf://)</option>
+      </select>
 
-    <div class="tag-section">
-      <label for="exclusion-input">Exclusion Patterns</label>
-      <div class="tag-input-container">
-        <input type="text" id="exclusion-input" placeholder="Enter regex">
-        <button id="exclusion-add" class="add-button">Add</button>
-        <button id="exclusion-reset" class="reset-button">Reset</button>
+      <div class="tag-section">
+        <label for="exclusion-input">Exclusion Patterns</label>
+        <div class="tag-input-container">
+          <input type="text" id="exclusion-input" placeholder="Enter regex" />
+          <button id="exclusion-add" class="add-button">Add</button>
+          <button id="exclusion-reset" class="reset-button">Reset</button>
+        </div>
+        <div id="tag-container" class="tag-container exclusion-tags"></div>
       </div>
-      <div id="tag-container" class="tag-container exclusion-tags"></div>
-    </div>
 
-    <div class="tag-section">
-      <label for="combining-input">Combining Patterns</label>
-      <div class="tag-input-container">
-        <input type="text" id="combining-input" placeholder="Enter regex">
-        <button id="combining-add" class="add-button">Add</button>
-        <button id="combining-reset" class="reset-button">Reset</button>
+      <div class="tag-section">
+        <label for="combining-input">Combining Patterns</label>
+        <div class="tag-input-container">
+          <input type="text" id="combining-input" placeholder="Enter regex" />
+          <button id="combining-add" class="add-button">Add</button>
+          <button id="combining-reset" class="reset-button">Reset</button>
+        </div>
+        <div id="tag-container" class="tag-container combining-tags"></div>
       </div>
-      <div id="tag-container" class="tag-container combining-tags"></div>
-    </div>
 
-    <div class="tag-section">
-      <label for="extension-input">File Extensions</label>
-      <div class="tag-input-container">
-        <input type="text" id="extension-input" placeholder="Enter extension">
-        <button id="extension-add" class="add-button">Add</button>
-        <button id="extension-reset" class="reset-button">Reset</button>
+      <div class="tag-section">
+        <label for="extension-input">File Extensions</label>
+        <div class="tag-input-container">
+          <input
+            type="text"
+            id="extension-input"
+            placeholder="Enter extension"
+          />
+          <button id="extension-add" class="add-button">Add</button>
+          <button id="extension-reset" class="reset-button">Reset</button>
+        </div>
+        <div id="tag-container" class="tag-container extension-tags"></div>
       </div>
-      <div id="tag-container" class="tag-container extension-tags"></div>
     </div>
-  </div>
-  <div id="toast" class="toast"></div>
-  <script src="options.js"></script>
-</body>
+    <div id="toast" class="toast"></div>
+    <script src="options.js"></script>
+  </body>
 </html>
