@@ -267,14 +267,30 @@ function createOverlays() {
 
             // Add loading spinner
             const spinner = document.createElement('div');
-            spinner.style.cssText = `
-              width: 50px;
-              height: 50px;
-              border: 5px solid #f3f3f3;
-              border-top: 5px solid #3498db;
-              border-radius: 50%;
-              animation: spin 1s linear infinite;
-            `;
+            
+            // Get the preferred editor and set spinner color accordingly
+            chrome.storage.sync.get(
+              {
+                preferredEditor: 'vscode', // default value
+              },
+              (items) => {
+                const isWindsurf = items.preferredEditor === 'windsurf';
+                const spinnerBg = isWindsurf ? '#2E7D32' : '#005999'; // Darker colors
+                const spinnerIndicator = isWindsurf ? '#69F0AE' : '#61DAFB'; // Lighter colors
+                spinner.style.cssText = `
+                  position: absolute;
+                  top: 50%;
+                  left: 50%;
+                  transform: translate(-50%, -50%);
+                  width: 50px;
+                  height: 50px;
+                  border: 5px solid ${spinnerBg};
+                  border-top: 5px solid ${spinnerIndicator};
+                  border-radius: 50%;
+                  animation: spin 1s linear infinite;
+                `;
+              }
+            );
 
             // Add keyframe animation for spinner
             const styleSheet = document.createElement('style');
@@ -320,9 +336,9 @@ function createOverlays() {
                   },
                   (items) => {
                     const editorScheme =
-                      items.preferredEditor === 'vscode'
-                        ? 'vscode'
-                        : 'windsurf';
+                      items.preferredEditor === 'windsurf'
+                        ? 'windsurf'
+                        : 'vscode';
                     const deeplink = `${editorScheme}://file${response.path}`;
                     window.open(deeplink, '_blank');
                   }

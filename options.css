@@ -28,11 +28,37 @@ input[type='text'] {
   font-family: 'Consolas', monospace;
 }
 
+select {
+  width: 100%;
+  padding: 16px 48px 16px 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 20px;
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: #999;
+}
+
 select:focus,
-input[type='text']:focus {
+input:focus {
   outline: none;
-  border-color: #0078d4;
-  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+  border-color: var(--ide-color, #0078d4);
+  box-shadow: 0 0 0 2px rgba(var(--ide-color-rgb, 0, 120, 212), 0.5);
+}
+
+input[type='text'] {
+  padding: 16px;
+}
+
+input[type='text']:hover {
+  border-color: #999;
 }
 
 label {
@@ -66,7 +92,7 @@ label {
 .add-button {
   border: none;
   background-color: #0078d4;
-  color: white;
+  color: black;
 }
 
 .reset-button {
@@ -76,7 +102,7 @@ label {
 }
 
 .add-button:hover {
-  background-color: #006cbd;
+  filter: brightness(1.2);
 }
 
 .reset-button:hover {
@@ -134,25 +160,6 @@ label {
 .invalid-regex,
 .invalid-input {
   border-color: #ff4444 !important;
-}
-
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #4caf50;
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  font-size: 14px;
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-  pointer-events: none;
-}
-
-.toast.show {
-  opacity: 1;
 }
 
 @media (prefers-color-scheme: dark) {

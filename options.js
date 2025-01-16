@@ -6,22 +6,9 @@ function saveOptions() {
       preferredEditor: editor,
     },
     () => {
-      showToast('Options saved');
+      updateButtonColors();
     }
   );
-}
-
-// Toast notification
-let toastTimeout;
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.classList.add('show');
-
-  clearTimeout(toastTimeout);
-  toastTimeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2000);
 }
 
 // Restores select box state using the preferences stored in chrome.storage
@@ -32,6 +19,7 @@ function restoreOptions() {
     },
     (items) => {
       document.getElementById('editor-select').value = items.preferredEditor;
+      updateButtonColors(); // Update button colors when options are restored
     }
   );
 }
@@ -78,31 +66,22 @@ let fileTypes = new Set();
 let combineRegex = new Set();
 
 function savePatterns() {
-  chrome.storage.sync.set({ regexPatterns: Array.from(patterns) }, () => {
-    showToast('Options saved');
-  });
+  chrome.storage.sync.set({ regexPatterns: Array.from(patterns) });
 }
 
 function saveFileTypes() {
-  chrome.storage.sync.set({ fileTypes: Array.from(fileTypes) }, () => {
-    showToast('Options saved');
-  });
+  chrome.storage.sync.set({ fileTypes: Array.from(fileTypes) });
 }
 
 function saveCombineRegex() {
-  chrome.storage.sync.set(
-    {
-      combineRegex: Array.from(
-        document.querySelectorAll('.combine-regex-pill')
-      ).map((el) => el.dataset.pattern),
-      exclusionPatterns: Array.from(
-        document.querySelectorAll('.regex-pill')
-      ).map((el) => el.dataset.pattern),
-    },
-    () => {
-      showToast('Options saved');
-    }
-  );
+  chrome.storage.sync.set({
+    combineRegex: Array.from(
+      document.querySelectorAll('.combine-regex-pill')
+    ).map((el) => el.dataset.pattern),
+    exclusionPatterns: Array.from(
+      document.querySelectorAll('.regex-pill')
+    ).map((el) => el.dataset.pattern),
+  });
 }
 
 function isValidRegex(pattern) {
@@ -181,7 +160,6 @@ function addExclusionPattern() {
   if (!pattern) return;
 
   if (!isValidRegex(pattern)) {
-    showToast('Invalid regex pattern');
     return;
   }
 
@@ -189,7 +167,6 @@ function addExclusionPattern() {
     document.querySelectorAll('.regex-pill')
   ).map((el) => el.dataset.pattern);
   if (existingPatterns.includes(pattern)) {
-    showToast('Pattern already exists');
     return;
   }
 
@@ -204,7 +181,6 @@ function addCombiningPattern() {
   if (!pattern) return;
 
   if (!isValidRegex(pattern)) {
-    showToast('Invalid regex pattern');
     return;
   }
 
@@ -212,7 +188,6 @@ function addCombiningPattern() {
     document.querySelectorAll('.combine-regex-pill')
   ).map((el) => el.dataset.pattern);
   if (existingPatterns.includes(pattern)) {
-    showToast('Pattern already exists');
     return;
   }
 
@@ -227,7 +202,6 @@ function addExtension() {
   if (!extension) return;
 
   if (!isValidExtension(extension)) {
-    showToast('Invalid file extension');
     return;
   }
 
@@ -235,7 +209,6 @@ function addExtension() {
     (el) => el.dataset.pattern
   );
   if (existingExtensions.includes(extension)) {
-    showToast('Extension already exists');
     return;
   }
 
@@ -334,6 +307,38 @@ function initializeFileTypes() {
       extensionContainer.appendChild(createExtensionElement(extension));
     });
   });
+}
+
+function updateButtonColors() {
+  const editor = document.getElementById('editor-select').value;
+  const addButtons = [
+    document.getElementById('exclusion-add'),
+    document.getElementById('combining-add'),
+    document.getElementById('extension-add'),
+  ];
+  const root = document.documentElement;
+
+  if (editor === 'windsurf') {
+    addButtons.forEach((button) => {
+      if (button) {
+        button.style.backgroundColor = '#4CAF50';
+        button.style.borderColor = '#45a049';
+        button.style.color = 'black';
+      }
+    });
+    root.style.setProperty('--ide-color', '#4CAF50');
+    root.style.setProperty('--ide-color-rgb', '76, 175, 80');
+  } else {
+    addButtons.forEach((button) => {
+      if (button) {
+        button.style.backgroundColor = '#007ACC';
+        button.style.borderColor = '#005999';
+        button.style.color = 'white';
+      }
+    });
+    root.style.setProperty('--ide-color', '#007ACC');
+    root.style.setProperty('--ide-color-rgb', '0, 122, 204');
+  }
 }
 
 // Initialize when options page loads
