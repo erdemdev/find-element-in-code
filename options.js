@@ -37,25 +37,33 @@ function restoreOptions() {
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById('editor-select').addEventListener('change', saveOptions);
+document
+  .getElementById('editor-select')
+  .addEventListener('change', saveOptions);
 
 // Regex pattern management
 const exclusionInput = document.getElementById('exclusion-input');
 const exclusionAddButton = document.getElementById('exclusion-add');
 const exclusionResetButton = document.getElementById('exclusion-reset');
-const exclusionContainer = document.querySelector('.tag-container.exclusion-tags');
+const exclusionContainer = document.querySelector(
+  '.tag-container.exclusion-tags'
+);
 
 // Regex combination management
 const combiningInput = document.getElementById('combining-input');
 const combiningAddButton = document.getElementById('combining-add');
 const combiningResetButton = document.getElementById('combining-reset');
-const combiningContainer = document.querySelector('.tag-container.combining-tags');
+const combiningContainer = document.querySelector(
+  '.tag-container.combining-tags'
+);
 
 // File extension management
 const extensionInput = document.getElementById('extension-input');
 const extensionAddButton = document.getElementById('extension-add');
 const extensionResetButton = document.getElementById('extension-reset');
-const extensionContainer = document.querySelector('.tag-container.extension-tags');
+const extensionContainer = document.querySelector(
+  '.tag-container.extension-tags'
+);
 
 // Default values
 const DEFAULT_PATTERNS = ['^.{1,2}$', '^radix-', '^path'];
@@ -79,12 +87,19 @@ function saveFileTypes() {
 }
 
 function saveCombineRegex() {
-  chrome.storage.sync.set({
-    combineRegex: Array.from(document.querySelectorAll('.combine-regex-pill')).map(el => el.dataset.pattern),
-    exclusionPatterns: Array.from(document.querySelectorAll('.regex-pill')).map(el => el.dataset.pattern)
-  }, () => {
-    showToast('Options saved');
-  });
+  chrome.storage.sync.set(
+    {
+      combineRegex: Array.from(
+        document.querySelectorAll('.combine-regex-pill')
+      ).map((el) => el.dataset.pattern),
+      exclusionPatterns: Array.from(
+        document.querySelectorAll('.regex-pill')
+      ).map((el) => el.dataset.pattern),
+    },
+    () => {
+      showToast('Options saved');
+    }
+  );
 }
 
 function isValidRegex(pattern) {
@@ -159,7 +174,9 @@ function addExclusionPattern() {
     return;
   }
 
-  const existingPatterns = Array.from(document.querySelectorAll('.regex-pill')).map(el => el.dataset.pattern);
+  const existingPatterns = Array.from(
+    document.querySelectorAll('.regex-pill')
+  ).map((el) => el.dataset.pattern);
   if (existingPatterns.includes(pattern)) {
     showToast('Pattern already exists');
     return;
@@ -180,7 +197,9 @@ function addCombiningPattern() {
     return;
   }
 
-  const existingPatterns = Array.from(document.querySelectorAll('.combine-regex-pill')).map(el => el.dataset.pattern);
+  const existingPatterns = Array.from(
+    document.querySelectorAll('.combine-regex-pill')
+  ).map((el) => el.dataset.pattern);
   if (existingPatterns.includes(pattern)) {
     showToast('Pattern already exists');
     return;
@@ -201,7 +220,9 @@ function addExtension() {
     return;
   }
 
-  const existingExtensions = Array.from(document.querySelectorAll('.tag')).map(el => el.dataset.pattern);
+  const existingExtensions = Array.from(document.querySelectorAll('.tag')).map(
+    (el) => el.dataset.pattern
+  );
   if (existingExtensions.includes(extension)) {
     showToast('Extension already exists');
     return;
