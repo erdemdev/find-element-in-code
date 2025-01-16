@@ -56,7 +56,7 @@ const DEFAULT_PATTERNS = ['^.{1,2}$', '^radix-', '^path'];
 const DEFAULT_EXTENSIONS = ['html', 'jsx', 'tsx', 'astro', 'php', 'svg'];
 
 let patterns = new Set();
-let extensions = new Set();
+let fileTypes = new Set();
 
 function savePatterns() {
   chrome.storage.sync.set({ regexPatterns: Array.from(patterns) }, () => {
@@ -64,8 +64,8 @@ function savePatterns() {
   });
 }
 
-function saveExtensions() {
-  chrome.storage.sync.set({ fileExtensions: Array.from(extensions) }, () => {
+function saveFileTypes() {
+  chrome.storage.sync.set({ fileTypes: Array.from(fileTypes) }, () => {
     showToast('Options saved');
   });
 }
@@ -109,8 +109,8 @@ function createRegexElement(pattern) {
 
 function createExtensionElement(extension) {
   return createPillElement(extension, (text) => {
-    extensions.delete(text);
-    saveExtensions();
+    fileTypes.delete(text);
+    saveFileTypes();
   });
 }
 
@@ -134,27 +134,15 @@ function addRegexPattern() {
   }
 }
 
-function addExtension() {
-  // Remove leading dot and convert to lowercase
-  const extension = extensionInput.value
-    .trim()
-    .toLowerCase()
-    .replace(/^\./, '');
-
-  if (!extension) return;
-
-  if (!isValidExtension(extension)) {
-    extensionInput.classList.add('invalid-input');
-    return;
-  }
-
-  extensionInput.classList.remove('invalid-input');
-
-  if (!extensions.has(extension)) {
-    extensions.add(extension);
+function addFileType() {
+  const extension = extensionInput.value.trim().toLowerCase();
+  if (extension && isValidExtension(extension) && !fileTypes.has(extension)) {
+    fileTypes.add(extension);
     extensionsContainer.appendChild(createExtensionElement(extension));
     extensionInput.value = '';
-    saveExtensions();
+    saveFileTypes();
+  } else {
+    showToast('Invalid file type or already exists');
   }
 }
 
@@ -167,13 +155,14 @@ function resetPatterns() {
   savePatterns();
 }
 
-function resetExtensions() {
-  extensions = new Set(DEFAULT_EXTENSIONS);
+function resetFileTypes() {
+  fileTypes.clear();
   extensionsContainer.innerHTML = '';
   DEFAULT_EXTENSIONS.forEach((extension) => {
+    fileTypes.add(extension);
     extensionsContainer.appendChild(createExtensionElement(extension));
   });
-  saveExtensions();
+  saveFileTypes();
 }
 
 // Event listeners
@@ -185,11 +174,11 @@ regexInput.addEventListener('keypress', (e) => {
   }
 });
 
-addExtensionButton.addEventListener('click', addExtension);
-resetExtensionsButton.addEventListener('click', resetExtensions);
+addExtensionButton.addEventListener('click', addFileType);
+resetExtensionsButton.addEventListener('click', resetFileTypes);
 extensionInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    addExtension();
+    addFileType();
   }
 });
 
@@ -228,17 +217,11 @@ function initializePatterns() {
   });
 }
 
-function initializeExtensions() {
-  chrome.storage.sync.get(['fileExtensions'], (result) => {
-    if (result.fileExtensions === undefined) {
-      extensions = new Set(DEFAULT_EXTENSIONS);
-      saveExtensions();
-    } else {
-      extensions = new Set(result.fileExtensions);
-    }
-
+function initializeFileTypes() {
+  chrome.storage.sync.get({ fileTypes: DEFAULT_EXTENSIONS }, (items) => {
+    fileTypes = new Set(items.fileTypes);
     extensionsContainer.innerHTML = '';
-    extensions.forEach((extension) => {
+    items.fileTypes.forEach((extension) => {
       extensionsContainer.appendChild(createExtensionElement(extension));
     });
   });
@@ -248,5 +231,5 @@ function initializeExtensions() {
 document.addEventListener('DOMContentLoaded', () => {
   restoreOptions();
   initializePatterns();
-  initializeExtensions();
+  initializeFileTypes();
 });
