@@ -16,22 +16,27 @@ h1 {
   opacity: 0.5;
 }
 
-select {
+select,
+input[type='text'] {
   width: 100%;
   padding: 16px;
-  margin-top: 16px;
-  border: 1px solid #404040;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
-  font-size: 20px;
-  background-color: #2d2d2d;
-  color: #ffffff;
+  font-size: 16px;
+  background-color: #f5f5f5;
+  color: #333;
+  font-family: 'Consolas', monospace;
 }
 
-select:focus {
-  outline-color: #0078d4;
+select:focus,
+input[type='text']:focus {
+  outline: none;
+  border-color: #0078d4;
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
 }
 
 label {
+  margin-bottom: 16px;
   font-weight: 500;
   color: inherit;
   font-size: 20px;
@@ -45,60 +50,43 @@ label {
 .tag-input-container {
   display: flex;
   gap: 8px;
-  margin-top: 16px;
 }
 
-#tag-input,
-#extension-input {
-  flex: 1;
-  padding: 16px;
-  border: 1px solid #404040;
-  border-radius: 8px;
-  font-size: 16px;
-  font-family: 'Consolas', monospace;
-  background-color: #2d2d2d;
-  color: #ffffff;
-}
-
-#tag-input:focus,
-#extension-input:focus {
-  outline-color: #0078d4;
-}
-
-#add-tag,
-#add-extension {
-  padding: 0 24px;
+.add-button {
+  padding: 0 32px;
   border: none;
   border-radius: 8px;
   background-color: #0078d4;
   color: white;
   font-size: 16px;
   cursor: pointer;
+  height: 52px;
+  white-space: nowrap;
 }
 
-#add-tag:hover,
-#add-extension:hover {
+.add-button:hover {
   background-color: #006cbd;
 }
 
-#tags-container,
-#extensions-container {
+.tag-container {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 16px;
 }
 
-.tag {
+.tag,
+.regex-pill,
+.combine-regex-pill {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  background-color: #2d2d2d;
+  background-color: #f0f0f0;
   border-radius: 16px;
   font-size: 14px;
   font-family: 'Consolas', monospace;
-  color: #ffffff;
+  color: #333;
 }
 
 .remove-tag {
@@ -107,29 +95,30 @@ label {
   padding: 0;
   font-size: 18px;
   cursor: pointer;
-  color: #999;
+  color: #666;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .remove-tag:hover {
-  color: #ff6666;
+  color: #ff4444;
 }
 
 .reset-button {
   padding: 0 24px;
-  border: 1px solid #404040;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   background-color: transparent;
-  color: #999;
+  color: #666;
   font-size: 16px;
   cursor: pointer;
+  height: 52px;
 }
 
 .reset-button:hover {
-  background-color: #2d2d2d;
-  border-color: #666;
+  background-color: #f5f5f5;
+  border-color: #ccc;
 }
 
 .invalid-regex,
@@ -142,7 +131,7 @@ label {
   bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 12px 24px;
   border-radius: 8px;
@@ -161,6 +150,29 @@ label {
     background-color: #1e1e1e;
     color: #ffffff;
   }
+
+  select,
+  input[type='text'] {
+    background-color: #2d2d2d;
+    border-color: #404040;
+    color: #ffffff;
+  }
+
+  .tag,
+  .regex-pill,
+  .combine-regex-pill {
+    background-color: #2d2d2d;
+    color: #ffffff;
+  }
+
+  .remove-tag {
+    color: #999;
+  }
+
+  .remove-tag:hover {
+    color: #ff6666;
+  }
+
   .reset-button {
     border-color: #404040;
     color: #999;

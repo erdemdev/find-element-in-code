@@ -1,6 +1,6 @@
 // Save options to chrome.storage
 function saveOptions() {
-  const editor = document.getElementById('editor').value;
+  const editor = document.getElementById('editor-select').value;
   chrome.storage.sync.set(
     {
       preferredEditor: editor,
@@ -31,32 +31,40 @@ function restoreOptions() {
       preferredEditor: 'vscode', // default value
     },
     (items) => {
-      document.getElementById('editor').value = items.preferredEditor;
+      document.getElementById('editor-select').value = items.preferredEditor;
     }
   );
 }
 
 document.addEventListener('DOMContentLoaded', restoreOptions);
-document.getElementById('editor').addEventListener('change', saveOptions);
+document.getElementById('editor-select').addEventListener('change', saveOptions);
 
 // Regex pattern management
-const regexInput = document.getElementById('tag-input');
-const addRegexButton = document.getElementById('add-tag');
-const resetButton = document.getElementById('reset-filters');
-const regexContainer = document.getElementById('tags-container');
+const exclusionInput = document.getElementById('exclusion-input');
+const exclusionAddButton = document.getElementById('exclusion-add');
+const exclusionResetButton = document.getElementById('exclusion-reset');
+const exclusionContainer = document.querySelector('.tag-container.exclusion-tags');
+
+// Regex combination management
+const combiningInput = document.getElementById('combining-input');
+const combiningAddButton = document.getElementById('combining-add');
+const combiningResetButton = document.getElementById('combining-reset');
+const combiningContainer = document.querySelector('.tag-container.combining-tags');
 
 // File extension management
 const extensionInput = document.getElementById('extension-input');
-const addExtensionButton = document.getElementById('add-extension');
-const resetExtensionsButton = document.getElementById('reset-extensions');
-const extensionsContainer = document.getElementById('extensions-container');
+const extensionAddButton = document.getElementById('extension-add');
+const extensionResetButton = document.getElementById('extension-reset');
+const extensionContainer = document.querySelector('.tag-container.extension-tags');
 
 // Default values
 const DEFAULT_PATTERNS = ['^.{1,2}$', '^radix-', '^path'];
 const DEFAULT_EXTENSIONS = ['html', 'jsx', 'tsx', 'astro', 'php', 'svg'];
+const DEFAULT_COMBINE_REGEX = ['\\d+'];
 
 let patterns = new Set();
 let fileTypes = new Set();
+let combineRegex = new Set();
 
 function savePatterns() {
   chrome.storage.sync.set({ regexPatterns: Array.from(patterns) }, () => {
@@ -66,6 +74,15 @@ function savePatterns() {
 
 function saveFileTypes() {
   chrome.storage.sync.set({ fileTypes: Array.from(fileTypes) }, () => {
+    showToast('Options saved');
+  });
+}
+
+function saveCombineRegex() {
+  chrome.storage.sync.set({
+    combineRegex: Array.from(document.querySelectorAll('.combine-regex-pill')).map(el => el.dataset.pattern),
+    exclusionPatterns: Array.from(document.querySelectorAll('.regex-pill')).map(el => el.dataset.pattern)
+  }, () => {
     showToast('Options saved');
   });
 }
@@ -83,28 +100,47 @@ function isValidExtension(extension) {
   return /^[a-zA-Z0-9]+$/.test(extension);
 }
 
-function createPillElement(text, onRemove) {
+function createPillElement(pattern, onRemove) {
   const pill = document.createElement('span');
   pill.className = 'tag';
-  pill.textContent = text;
+  pill.textContent = pattern;
+  pill.dataset.pattern = pattern;
 
   const removeButton = document.createElement('button');
   removeButton.className = 'remove-tag';
   removeButton.innerHTML = '&times;';
   removeButton.onclick = () => {
     pill.remove();
-    onRemove(text);
+    if (onRemove) onRemove(pattern);
   };
 
   pill.appendChild(removeButton);
   return pill;
 }
 
-function createRegexElement(pattern) {
+function createExclusionElement(pattern) {
   return createPillElement(pattern, (text) => {
     patterns.delete(text);
     savePatterns();
   });
+}
+
+function createCombiningElement(pattern) {
+  const pill = document.createElement('span');
+  pill.className = 'combine-regex-pill';
+  pill.textContent = pattern;
+  pill.dataset.pattern = pattern;
+
+  const removeButton = document.createElement('button');
+  removeButton.className = 'remove-tag';
+  removeButton.innerHTML = '&times;';
+  removeButton.onclick = () => {
+    pill.remove();
+    saveCombineRegex();
+  };
+
+  pill.appendChild(removeButton);
+  return pill;
 }
 
 function createExtensionElement(extension) {
@@ -114,89 +150,119 @@ function createExtensionElement(extension) {
   });
 }
 
-function addRegexPattern() {
-  const pattern = regexInput.value.trim();
-
+function addExclusionPattern() {
+  const pattern = exclusionInput.value.trim();
   if (!pattern) return;
 
   if (!isValidRegex(pattern)) {
-    regexInput.classList.add('invalid-regex');
+    showToast('Invalid regex pattern');
     return;
   }
 
-  regexInput.classList.remove('invalid-regex');
-
-  if (!patterns.has(pattern)) {
-    patterns.add(pattern);
-    regexContainer.appendChild(createRegexElement(pattern));
-    regexInput.value = '';
-    savePatterns();
+  const existingPatterns = Array.from(document.querySelectorAll('.regex-pill')).map(el => el.dataset.pattern);
+  if (existingPatterns.includes(pattern)) {
+    showToast('Pattern already exists');
+    return;
   }
+
+  const pillElement = createExclusionElement(pattern);
+  exclusionContainer.appendChild(pillElement);
+  exclusionInput.value = '';
+  savePatterns();
 }
 
-function addFileType() {
-  const extension = extensionInput.value.trim().toLowerCase();
-  if (extension && isValidExtension(extension) && !fileTypes.has(extension)) {
-    fileTypes.add(extension);
-    extensionsContainer.appendChild(createExtensionElement(extension));
-    extensionInput.value = '';
-    saveFileTypes();
-  } else {
-    showToast('Invalid file type or already exists');
+function addCombiningPattern() {
+  const pattern = combiningInput.value.trim();
+  if (!pattern) return;
+
+  if (!isValidRegex(pattern)) {
+    showToast('Invalid regex pattern');
+    return;
   }
+
+  const existingPatterns = Array.from(document.querySelectorAll('.combine-regex-pill')).map(el => el.dataset.pattern);
+  if (existingPatterns.includes(pattern)) {
+    showToast('Pattern already exists');
+    return;
+  }
+
+  const pillElement = createCombiningElement(pattern);
+  combiningContainer.appendChild(pillElement);
+  combiningInput.value = '';
+  saveCombineRegex();
+}
+
+function addExtension() {
+  const extension = extensionInput.value.trim().toLowerCase();
+  if (!extension) return;
+
+  if (!isValidExtension(extension)) {
+    showToast('Invalid file extension');
+    return;
+  }
+
+  const existingExtensions = Array.from(document.querySelectorAll('.tag')).map(el => el.dataset.pattern);
+  if (existingExtensions.includes(extension)) {
+    showToast('Extension already exists');
+    return;
+  }
+
+  const pillElement = createExtensionElement(extension);
+  extensionContainer.appendChild(pillElement);
+  extensionInput.value = '';
+  saveFileTypes();
 }
 
 function resetPatterns() {
   patterns = new Set(DEFAULT_PATTERNS);
-  regexContainer.innerHTML = '';
+  exclusionContainer.innerHTML = '';
   DEFAULT_PATTERNS.forEach((pattern) => {
-    regexContainer.appendChild(createRegexElement(pattern));
+    exclusionContainer.appendChild(createExclusionElement(pattern));
   });
   savePatterns();
 }
 
 function resetFileTypes() {
   fileTypes.clear();
-  extensionsContainer.innerHTML = '';
+  extensionContainer.innerHTML = '';
   DEFAULT_EXTENSIONS.forEach((extension) => {
     fileTypes.add(extension);
-    extensionsContainer.appendChild(createExtensionElement(extension));
+    extensionContainer.appendChild(createExtensionElement(extension));
   });
   saveFileTypes();
 }
 
+function resetCombineRegex() {
+  combiningContainer.innerHTML = '';
+  DEFAULT_COMBINE_REGEX.forEach((pattern) => {
+    const pillElement = createCombiningElement(pattern);
+    combiningContainer.appendChild(pillElement);
+  });
+  saveCombineRegex();
+}
+
 // Event listeners
-addRegexButton.addEventListener('click', addRegexPattern);
-resetButton.addEventListener('click', resetPatterns);
-regexInput.addEventListener('keypress', (e) => {
+exclusionAddButton.addEventListener('click', addExclusionPattern);
+exclusionResetButton.addEventListener('click', resetPatterns);
+exclusionInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    addRegexPattern();
+    addExclusionPattern();
   }
 });
 
-addExtensionButton.addEventListener('click', addFileType);
-resetExtensionsButton.addEventListener('click', resetFileTypes);
+combiningAddButton.addEventListener('click', addCombiningPattern);
+combiningResetButton.addEventListener('click', resetCombineRegex);
+combiningInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    addCombiningPattern();
+  }
+});
+
+extensionAddButton.addEventListener('click', addExtension);
+extensionResetButton.addEventListener('click', resetFileTypes);
 extensionInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') {
-    addFileType();
-  }
-});
-
-regexInput.addEventListener('input', () => {
-  if (regexInput.classList.contains('invalid-regex')) {
-    const pattern = regexInput.value.trim();
-    if (isValidRegex(pattern) || !pattern) {
-      regexInput.classList.remove('invalid-regex');
-    }
-  }
-});
-
-extensionInput.addEventListener('input', () => {
-  if (extensionInput.classList.contains('invalid-input')) {
-    const extension = extensionInput.value.trim();
-    if (isValidExtension(extension) || !extension) {
-      extensionInput.classList.remove('invalid-input');
-    }
+    addExtension();
   }
 });
 
@@ -210,9 +276,20 @@ function initializePatterns() {
       patterns = new Set(result.regexPatterns);
     }
 
-    regexContainer.innerHTML = '';
+    exclusionContainer.innerHTML = '';
     patterns.forEach((pattern) => {
-      regexContainer.appendChild(createRegexElement(pattern));
+      exclusionContainer.appendChild(createExclusionElement(pattern));
+    });
+  });
+}
+
+function initializeCombineRegex() {
+  chrome.storage.sync.get({ combineRegex: DEFAULT_COMBINE_REGEX }, (items) => {
+    const combineRegexPatterns = items.combineRegex;
+    combiningContainer.innerHTML = '';
+    combineRegexPatterns.forEach((pattern) => {
+      const pillElement = createCombiningElement(pattern);
+      combiningContainer.appendChild(pillElement);
     });
   });
 }
@@ -220,9 +297,9 @@ function initializePatterns() {
 function initializeFileTypes() {
   chrome.storage.sync.get({ fileTypes: DEFAULT_EXTENSIONS }, (items) => {
     fileTypes = new Set(items.fileTypes);
-    extensionsContainer.innerHTML = '';
+    extensionContainer.innerHTML = '';
     items.fileTypes.forEach((extension) => {
-      extensionsContainer.appendChild(createExtensionElement(extension));
+      extensionContainer.appendChild(createExtensionElement(extension));
     });
   });
 }
@@ -232,4 +309,5 @@ document.addEventListener('DOMContentLoaded', () => {
   restoreOptions();
   initializePatterns();
   initializeFileTypes();
+  initializeCombineRegex();
 });
