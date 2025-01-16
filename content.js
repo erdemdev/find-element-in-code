@@ -163,9 +163,6 @@ function createOverlays() {
           idLabel.style.cssText = `
             display: none;
             position: absolute;
-            top: -25px;
-            left: 50%;
-            transform: translateX(-50%);
             background-color: #333;
             color: white;
             padding: 4px 8px;
@@ -187,12 +184,45 @@ function createOverlays() {
           overlay.style.width = rect.width + 'px';
           overlay.style.height = rect.height + 'px';
 
-          // Show ID on hover
+          // Show ID and position it dynamically on hover
           overlay.addEventListener('mouseenter', () => {
             if (isProcessing) return;
             const baseHue = color.match(/hsla?\((\d+)/)[1];
             overlay.style.border = `2px dashed hsla(${baseHue}, 70%, 60%, 1)`;
             idLabel.style.display = 'block';
+
+            // Get overlay dimensions
+            const overlayRect = overlay.getBoundingClientRect();
+            const isTallOverlay = overlayRect.height > 200;
+
+            if (isTallOverlay) {
+              // Center label for tall overlays
+              idLabel.style.top = '50%';
+              idLabel.style.bottom = 'auto';
+              idLabel.style.left = '50%';
+              idLabel.style.transform = 'translate(-50%, -50%)';
+            } else {
+              // First try to position above
+              idLabel.style.bottom = '100%';
+              idLabel.style.top = 'auto';
+              idLabel.style.left = '50%';
+              idLabel.style.transform = 'translateX(-50%)';
+
+              // Check if label is visible in window
+              const labelRect = idLabel.getBoundingClientRect();
+              const isVisible = labelRect.top >= 0 && 
+                              labelRect.left >= 0 && 
+                              labelRect.bottom <= window.innerHeight &&
+                              labelRect.right <= window.innerWidth;
+
+              if (!isVisible) {
+                // If not visible, center it in the overlay
+                idLabel.style.top = '50%';
+                idLabel.style.bottom = 'auto';
+                idLabel.style.left = '50%';
+                idLabel.style.transform = 'translate(-50%, -50%)';
+              }
+            }
           });
 
           overlay.addEventListener('mouseleave', () => {
