@@ -157,65 +157,44 @@ function createExtensionElement(extension) {
 
 function addExclusionPattern() {
   const pattern = exclusionInput.value.trim();
-  if (!pattern) return;
-
-  if (!isValidRegex(pattern)) {
-    return;
+  if (pattern && isValidRegex(pattern)) {
+    if (patterns.has(pattern)) {
+      alert('This pattern already exists!');
+      return;
+    }
+    patterns.add(pattern);
+    exclusionContainer.appendChild(createExclusionElement(pattern));
+    exclusionInput.value = '';
+    savePatterns();
   }
-
-  const existingPatterns = Array.from(
-    document.querySelectorAll('.regex-pill')
-  ).map((el) => el.dataset.pattern);
-  if (existingPatterns.includes(pattern)) {
-    return;
-  }
-
-  const pillElement = createExclusionElement(pattern);
-  exclusionContainer.appendChild(pillElement);
-  exclusionInput.value = '';
-  savePatterns();
 }
 
 function addCombiningPattern() {
   const pattern = combiningInput.value.trim();
-  if (!pattern) return;
-
-  if (!isValidRegex(pattern)) {
-    return;
+  if (pattern && isValidRegex(pattern)) {
+    if (combineRegex.has(pattern)) {
+      alert('This pattern already exists!');
+      return;
+    }
+    combineRegex.add(pattern);
+    combiningContainer.appendChild(createCombiningElement(pattern));
+    combiningInput.value = '';
+    saveCombineRegex();
   }
-
-  const existingPatterns = Array.from(
-    document.querySelectorAll('.combine-regex-pill')
-  ).map((el) => el.dataset.pattern);
-  if (existingPatterns.includes(pattern)) {
-    return;
-  }
-
-  const pillElement = createCombiningElement(pattern);
-  combiningContainer.appendChild(pillElement);
-  combiningInput.value = '';
-  saveCombineRegex();
 }
 
 function addExtension() {
-  const extension = extensionInput.value.trim().toLowerCase();
-  if (!extension) return;
-
-  if (!isValidExtension(extension)) {
-    return;
+  const extension = extensionInput.value.trim();
+  if (extension && isValidExtension(extension)) {
+    if (fileTypes.has(extension)) {
+      alert('This extension already exists!');
+      return;
+    }
+    fileTypes.add(extension);
+    extensionContainer.appendChild(createExtensionElement(extension));
+    extensionInput.value = '';
+    saveFileTypes();
   }
-
-  const existingExtensions = Array.from(document.querySelectorAll('.tag')).map(
-    (el) => el.dataset.pattern
-  );
-  if (existingExtensions.includes(extension)) {
-    return;
-  }
-
-  const pillElement = createExtensionElement(extension);
-  extensionContainer.appendChild(pillElement);
-  extensionInput.value = '';
-  saveFileTypes();
 }
 
 function resetPatterns() {
