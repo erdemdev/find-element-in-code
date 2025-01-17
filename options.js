@@ -78,9 +78,9 @@ function saveCombineRegex() {
     combineRegex: Array.from(
       document.querySelectorAll('.combine-regex-pill')
     ).map((el) => el.dataset.pattern),
-    exclusionPatterns: Array.from(
-      document.querySelectorAll('.regex-pill')
-    ).map((el) => el.dataset.pattern),
+    exclusionPatterns: Array.from(document.querySelectorAll('.regex-pill')).map(
+      (el) => el.dataset.pattern
+    ),
   });
 }
 
@@ -323,7 +323,7 @@ function updateButtonColors() {
       if (button) {
         button.style.backgroundColor = '#4CAF50';
         button.style.borderColor = '#45a049';
-        button.style.color = 'black';
+        button.style.color = 'white';
       }
     });
     root.style.setProperty('--ide-color', '#4CAF50');
