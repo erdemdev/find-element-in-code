@@ -35,7 +35,7 @@ select {
   border-radius: 4px;
   font-size: 14px;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
   background-repeat: no-repeat;
   background-position: right 16px center;
   background-size: 20px;
@@ -61,12 +61,33 @@ input[type='text']:hover {
   border-color: #999;
 }
 
+.info-button {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E")
+    center no-repeat;
+  border: none;
+  padding: 0;
+  margin-top: 4px;
+  margin-left: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  width: 20px;
+  height: 20px;
+  filter: invert(0.3);
+}
+
+.info-button:hover {
+  opacity: 1;
+}
+
 label {
-  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
   font-weight: 500;
   color: inherit;
   font-size: 20px;
-  display: block;
 }
 
 .tag-section {
@@ -198,5 +219,14 @@ label {
   .reset-button:hover {
     background-color: #2d2d2d;
     border-color: #666;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  }
+
+  .info-button {
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 16v-4'/%3E%3Cpath d='M12 8h.01'/%3E%3C/svg%3E")
+      center no-repeat;
   }
 }
