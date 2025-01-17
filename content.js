@@ -151,13 +151,19 @@ function createOverlays() {
         const color = elementColors.get(standardizedId);
 
         elements.forEach((element) => {
-          const overlay = document.createElement('div');
+          const overlay = document.createElement('button');
           overlay.style.cssText = `
             position: absolute;
             z-index: 10000;
             background-color: ${color};
             cursor: pointer;
             pointer-events: auto;
+            border: none;
+            padding: 0;
+            margin: 0;
+            outline: none;
+            width: 100%;
+            height: 100%;
           `;
           overlay.setAttribute('data-highlight-overlay', '');
           overlay.setAttribute('data-group-id', standardizedId);
