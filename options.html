@@ -14,8 +14,12 @@
       </select>
 
       <div class="tag-section">
-        <label for="exclusion-input">Exclusion Patterns
-          <button class="info-button" title="Exclusion patterns are used to exclude specific files or directories from the search"></button>
+        <label for="exclusion-input"
+          >Exclusion Patterns
+          <div class="info-wrapper">
+            <button class="info-button"></button>
+            <div class="hover-card">Matching element ids will be excluded.</div>
+          </div>
         </label>
         <div class="tag-input-container">
           <input type="text" id="exclusion-input" placeholder="Enter regex" />
@@ -26,8 +30,16 @@
       </div>
 
       <div class="tag-section">
-        <label for="combining-input">Combining Patterns
-          <button class="info-button" title="Combining patterns are used to merge multiple search results into one"></button>
+        <label for="combining-input"
+          >Combining Patterns
+          <div class="info-wrapper">
+            <button class="info-button"></button>
+            <div class="hover-card">
+              Matching element ids will be combined into a single pattern by
+              replacing dynamic parts with `.*`. Useful for repeating UI
+              components.
+            </div>
+          </div>
         </label>
         <div class="tag-input-container">
           <input type="text" id="combining-input" placeholder="Enter regex" />
@@ -38,8 +50,15 @@
       </div>
 
       <div class="tag-section">
-        <label for="extension-input">File Extensions
-          <button class="info-button" title="File extensions are used to filter search results by file type"></button>
+        <label for="extension-input"
+          >File Extensions
+          <div class="info-wrapper">
+            <button class="info-button"></button>
+            <div class="hover-card">
+              Only files with these extensions will be searched for in the
+              codebase.
+            </div>
+          </div>
         </label>
         <div class="tag-input-container">
           <input
